@@ -1,0 +1,116 @@
+## ----data---------------------------------------------------------------------
+# Data collected between September 9 and 21, 2020
+
+soil <- read.csv("data/soil_temp_data_September_2020.csv",
+                header = TRUE, stringsAsFactors = TRUE)
+
+air_light <- read.csv("data/air_tem_and_light_data_October_2020.csv",
+                header = TRUE, stringsAsFactors = TRUE)
+
+# Central Park for comparison
+
+soil_CP <- c(23, 25, 23, 21, 20, 21, 18, 18, 19, 19, 14, 13, 12)
+
+air_CP <- c(25, 18, 21, 22, 21, 16, 17, 21, 22, 18, 17, 18, 20, 22, 23)
+
+
+# Central Park data obtained from https://www.greencastonline.com/tools/soil-temperature
+
+
+
+## ----soil_temperature_analysis------------------------------------------------
+library("Rmisc")
+
+soil_mean <- summarySE(data = soil, measurevar = "soil.temp", groupvars = "day")
+
+# Paired t-test
+
+x1 <- soil_mean$soil.temp
+x2 <- soil_CP
+
+t.test(x1, x2, paired = TRUE)
+
+
+## ----soil_plot----------------------------------------------------------------
+
+soil_se <- c(soil_mean$se, rep(0, 13))
+soil_day <- c(seq(1:13), seq(1:13))
+soil_id <- c(rep("Green Roof", 13), rep("Central Park", 13))
+soil_temp <- c(x1, x2)
+
+soil_df <- data.frame(soil_temp, soil_day, soil_se, soil_id)
+
+library(ggplot2)
+
+pdtime <- position_dodge(.1) # move them .05 to the left and none
+
+
+soil_plot <- ggplot(soil_df, aes(x = soil_day,
+                    y = soil_temp,
+                    group = soil_id)) +
+    geom_line(aes(linetype = soil_id)) +
+    geom_point(position = pdtime) +
+    geom_errorbar(aes(ymin = soil_temp - soil_se, ymax = soil_temp + soil_se),
+                colour="black", width = .1, position = pdtime) +
+    xlab("Day") +
+    ylab("Soil Temperature") +
+    scale_colour_manual(values = c("black", "black", "black"), name = "") +
+    scale_y_continuous(limits = c(10, 26),    # Set y range
+                        expand = c(0, 0),
+                       breaks = 0:100 * 1) +
+    theme_bw(base_size = 10) + theme(panel.grid = element_blank()) +
+    theme(legend.position = "bottom")
+
+soil_plot
+
+
+## ----air_temperature_analysis-------------------------------------------------
+library("Rmisc")
+
+air_mean <- summarySE(data = air_light, measurevar = "temperature", groupvars = "day")
+
+# Paired t-test
+
+x1 <- air_mean$temperature
+x2 <- air_CP
+
+t.test(x1, x2, paired = TRUE)
+
+
+## ----air_plot-----------------------------------------------------------------
+
+air_se <- c(air_mean$se, rep(0, 15))
+air_day <- c(seq(1:15), seq(1:15))
+air_id <- c(rep("Green Roof", 15), rep("Central Park", 15))
+air_temp <- c(x1, x2)
+
+air_df <- data.frame(air_temp, air_day, air_se, air_id)
+
+library(ggplot2)
+
+pdtime <- position_dodge(.1) # move them .05 to the left and none
+
+
+air_plot <- ggplot(air_df, aes(x = air_day,
+                    y = air_temp,
+                    group = air_id)) +
+    geom_line(aes(linetype = air_id)) +
+    geom_point(position = pdtime) +
+    geom_errorbar(aes(ymin = air_temp - air_se, ymax = air_temp + air_se),
+                colour="black", width = .1, position = pdtime) +
+    xlab("Day") +
+    ylab("Air Temperature") +
+    scale_colour_manual(values = c("black", "black", "black"), name = "") +
+    scale_y_continuous(limits = c(10, 28),    # Set y range
+                        expand = c(0, 0),
+                       breaks = 0:100 * 1) +
+    theme_bw(base_size = 10) + theme(panel.grid = element_blank()) +
+    theme(legend.position = "bottom")
+
+air_plot
+
+
+## ----light_intensity_analysis-------------------------------------------------
+light_model <- lm(light_intensity ~ logger, data = air_light)
+anova(light_model)
+
