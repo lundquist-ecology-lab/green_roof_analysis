@@ -4,7 +4,7 @@
 soil <- read.csv("data/soil_temp_data_September_2020.csv",
                 header = TRUE, stringsAsFactors = TRUE)
 
-air_light <- read.csv("data/air_tem_and_light_data_October_2020.csv",
+air_light <- read.csv("data/air_temp_and_light_data_October_2020.csv",
                 header = TRUE, stringsAsFactors = TRUE)
 
 # Central Park for comparison
@@ -21,11 +21,11 @@ air_CP <- c(25, 18, 21, 22, 21, 16, 17, 21, 22, 18, 17, 18, 20, 22, 23)
 ## ----soil_temperature_analysis------------------------------------------------
 library("Rmisc")
 
-soil_mean <- summarySE(data = soil, measurevar = "soil.temp", groupvars = "day")
+soil_mean <- summarySE(data = soil, measurevar = "soil_temp", groupvars = "day")
 
 # Paired t-test
 
-x1 <- soil_mean$soil.temp
+x1 <- soil_mean$soil_temp
 x2 <- soil_CP
 
 t.test(x1, x2, paired = TRUE)

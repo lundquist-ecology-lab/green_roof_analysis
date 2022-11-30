@@ -1,6 +1,6 @@
 ## Use Session > Set Working Directory > To Source File Directory
 
-data <- read.csv("data/terrace_biodiversity.csv", 
+data <- read.csv("data/terrace_biodiversity.csv",
                 head = TRUE, stringsAsFactors = TRUE)
 
 
@@ -26,12 +26,12 @@ species <- NULL
 section <- NULL
 k <- 1
 
-for(i in 1:max(data$section)) {
-  for(j in levels(factor(data$species))) {
+for (i in 1:max(data$section)) {
+  for (j in levels(factor(data$species))) {
     y <- subset(data, data$section == i)
     abundance[k] <- length(y$species[y$species == j])
     section[k] <- i
-    species[k] <- paste(data$Genus[data$species == j][1], 
+    species[k] <- paste(data$Genus[data$species == j][1],
                         data$Species[data$species == j][1], sep = " ")
     k <- k + 1
   }
